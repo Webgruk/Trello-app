@@ -8,3 +8,12 @@ export const findItemIndexById = <Titem extends item>(
 ) => {
   return items.findIndex((item: Titem) => item.id === id)
 }
+
+export const moveItem = <Titem>(array: Titem[], from: number, to: number) => {
+  const item = array[from]
+  return insertItemAtIdex(removeItemAtIdex(array, from), item, to)
+}
+
+export function removeItemAtIdex<Titem>(array: Titem[], index: number) {
+  return [...array.slice(0, index), ...array.slice(index + 1)]
+}

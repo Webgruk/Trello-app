@@ -2,9 +2,10 @@ import { ColumnContainer, ColumnTitle } from './styles'
 import { AddNewItem } from './AddNewItem'
 import { useAppState } from './state/AppStateContext'
 import { Card } from './Card'
-import { addTask } from './state/actions'
+import { addTask, moveList } from './state/actions'
 import { useRef } from 'react'
 import { useItemDrag } from './utils/useItemDrag'
+import { useDrop } from 'react-dnd'
 
 type ColumnProps = {
   text: string
@@ -16,9 +17,23 @@ export const Column = ({ text, id }: ColumnProps) => {
   const tasks = getTasksByListId(id)
 
   const ref = useRef<HTMLDivElement>(null)
+  const [, drop] = useDrop({
+    accept: 'COLUMN',
+    hover() {
+      if (!draggedItem) {
+        return
+      }
+      if (draggedItem.type === 'COLUMN') {
+        if (draggedItem.id === id) {
+          return
+        }
+        dispatch(moveList(draggedItem.id, id))
+      }
+    },
+  })
   const { drag } = useItemDrag({ type: 'COLUMN', id, text })
 
-  drag(ref)
+  drag(drop(ref))
 
   return (
     <ColumnContainer ref={ref}>
